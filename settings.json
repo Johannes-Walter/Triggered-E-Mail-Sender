@@ -1,0 +1,11 @@
+{
+    "GPIO_Pin": 10,
+    "E_Mail_Daten":
+    {
+        "sender_adress": "email.sender489@gmail.com",
+        "sender_password": "K^X7KroA9R%2nx%",
+        "sender_host": "smtp.gmail.com",
+        "server_port": 465,
+        "reciever_adress": "jo.walter97@gmx.de"
+    }
+}
