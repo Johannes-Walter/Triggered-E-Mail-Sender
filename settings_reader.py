@@ -6,13 +6,13 @@ __default_file_name = "settings.json"
 def get_pin_to_read() -> int:
     return __getSettings("GPIO_Pin")
 
-def get_E_Mail_daten() -> dict:
+def get_E_Mail_data() -> dict:
     return __getSettings("E_Mail_Daten")
 
 
 
 def __getSettings(data_name: str = ""):
-    with open(default_file_name) as read_file:
+    with open(__default_file_name) as read_file:
         data = json.load(read_file)
 
     if data_name == "":
