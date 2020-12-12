@@ -3,13 +3,35 @@ import smtplib
 import ssl
 import datetime
 
-def send_mail(subject: str, content: str):
+# "gebräuchliche" Formatierungen und Berechnungen für die Darstellung der Zeit in er Mail:
+# Formatvorlage für ein Datumsformat im "dd.mm.yyyy hh:mm"-Format mit einem trennenden "um" zwischen den Stunden und dem Datum.
+DATE_FORMAT: str = "%d.%m.%Y um %H:%M"
+
+# Formatiert die Gegebenen Sekunden und Mikrosekunden so, dass die Sekunden und 3 Nachkommastellen angezeigt werden.
+def format_seconds(duration: datetime.timedelta) -> str:
+
+    # Formatieren der Sekunden:
+        # Tausendertrennzeichen '_'
+        # Komma: '.'
+        # Nachkommastellen: 3
+    seconds = "{0:_.3f}".format(duration.total_seconds())
+
+    # Ersetzen des Punktes durch ein Komma
+    seconds = seconds.replace(".", ",")
+
+    # Tausendertrennzeichen zu Punkten
+    seconds = seconds.replace("_", ".")
+    return seconds
 
 
-    maildata = settings_reader.get_E_Mail_data()
+
+
+def send_mail(subject: str, content: str) -> None:
+    # Mailsendedaten (Server, Adressen, ...) laden
+    maildata: dict = settings_reader.get_E_Mail_data()
 
     # Nachricht Zusammenbauen, den Betreff mit zwei Leerzeilen vom Inhalt trennen
-    message = "Subject: {0}\n\n{1}".format(subject, content)
+    message: str = "Subject: {0}\n\n{1}".format(subject, content)
     
     
     # Einstellen des Servers
@@ -22,16 +44,4 @@ def send_mail(subject: str, content: str):
         server.sendmail(maildata["sender_adress"], maildata["receiver_adress"], message)
 
 
-def send_button_press(press_start: datetime.datetime, press_duration: datetime.timedelta):
-
-    # Das Datum im Tag.Monat.Jahr-Format und die Uhrzeit im Stunden:Minuten-Format formatieren
-    date = press_start.strftime("dem %d.%m.%Y um %H:%M")
-
-    # Die Dauer im Sekunden.Milisekunden-Format formatieren.
-    # Da es im timedelta keine Milisekunden gibt, muss die sog. "floor division" verwendet werden.
-    duration = "{0},{1}".format(press_duration.seconds, press_duration.microseconds // 1000)
-
-    subject = "Der Knopf wurde gedrueckt!"
-    message = "Am {0} wurde der Knopf fuer {1} Sekunden gedrueckt!".format(date, duration)
-
-    send_mail(subject, message)
+print(format_seconds(datetime.timedelta(15, 23, 20584, 0, 23)))

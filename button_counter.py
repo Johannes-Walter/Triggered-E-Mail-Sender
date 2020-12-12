@@ -1,3 +1,4 @@
+from typing import get_args
 from mailsender import send_mail
 import RPi.GPIO as GPIO
 import datetime
@@ -13,14 +14,29 @@ press_start: datetime.datetime
 press_end: datetime.datetime
 
 
+def GPIO_loop():
+    print("GPIO_loop starting...")
+    while True:
+        if GPIO.input(10) == GPIO.HIGH:
+            press_start = datetime.datetime.now()
+            while GPIO.input(10) == GPIO.HIGH:
+                pass
+            press_end = datetime.datetime.now()
 
-print("programm starting")
-while True:
-    if GPIO.input(10) == GPIO.HIGH:
-        press_start = datetime.datetime.now()
-        while GPIO.input(10) == GPIO.HIGH:
-            pass
-        press_end = datetime.datetime.now()
+            databasemanager.add_button_press(press_start, press_end-press_start)
+            send_button_press(press_start, press_end-press_start)
 
-        databasemanager.add_button_press(press_start, press_end-press_start)
-        mailsender.send_button_press(press_start, press_end-press_start)
+
+def send_button_press(press_start: datetime.datetime, press_duration: datetime.timedelta):
+
+    # Formatiert das Datum nach der im mailsender gegebenen Formatierung
+    date = press_start.strftime(mailsender.DATE_FORMAT)
+
+    # Formatiert die Sekunden und Microsekunden nach dem im mailsender gegebenen Formatierung
+    duration = mailsender.format_seconds(press_duration.seconds, press_duration.microseconds)
+
+    subject = "Der Knopf wurde gedrueckt!"
+    message = "Am {0} wurde der Knopf fuer {1} Sekunden gedrueckt!".format(date, duration)
+
+    mailsender.send_mail(subject, message)
+
