@@ -1,14 +1,17 @@
+from mailsender import send_mail
 import RPi.GPIO as GPIO
 import datetime
 import databasemanager
+import mailsender
 
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(10, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-press_start as datetime.datetime
-press_end as datetime.datetime
+press_start: datetime.datetime
+press_end: datetime.datetime
+
 
 
 print("programm starting")
@@ -20,4 +23,4 @@ while True:
         press_end = datetime.datetime.now()
 
         databasemanager.add_button_press(press_start, press_end-press_start)
-        print(databasemanager.get_presses_since(press_start))
+        mailsender.send_button_press(press_start, press_end-press_start)
