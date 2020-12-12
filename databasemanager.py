@@ -8,19 +8,19 @@ def add_button_press(press_begin: datetime.datetime, press_duration: datetime.ti
 
 
 def get_presses_since(date: datetime.datetime) -> dict:
-    return read_from_database("SELECT * FROM [pushings] WHERE [press_begin] > ?", date)
+    return read_from_database("SELECT * FROM [pushings] WHERE [press_begin] >= ?", date)
 
 
 def write_to_database(SQL_String: str, values: list):
-    with sqlite3.connect(database_name, values) as connection:
-        cursor = connection.cursor()
+    with sqlite3.connect(database_name) as connection:
+        connection.execute(SQL_String, values)
 
-        cursor.execute(SQL_String)
-        connection.commit() # Änderungen an der Datenbank speichern
+         # Änderungen an der Datenbank speichern
+        connection.commit()
+
 
 def read_from_database(SQL_String: str, comperator: list):
     with sqlite3.connect(database_name) as connection:
-        cursor = connection.cursor()
+        return connection.execute(SQL_String, comperator).fetchall()
 
-        cursor.execute(SQL_String, comperator)
-        cursor.fetchall
+

@@ -5,11 +5,12 @@ import datetime
 
 def send_mail(subject: str, content: str):
 
-    maildata = settings_reader.get_E_Mail_data()
-    message = """Subject: {0}
 
-{1}""".format(subject, content)
-    print(message)
+    maildata = settings_reader.get_E_Mail_data()
+
+    # Nachricht Zusammenbauen, den Betreff mit zwei Leerzeilen vom Inhalt trennen
+    message = "Subject: {0}\n\n{1}".format(subject, content)
+    
     
     # Einstellen des Servers
     with smtplib.SMTP_SSL(maildata["sender_host"], maildata["server_port"], context=ssl.create_default_context()) as server:
@@ -19,8 +20,6 @@ def send_mail(subject: str, content: str):
 
         # E-Mail schreiben und absenden
         server.sendmail(maildata["sender_adress"], maildata["receiver_adress"], message)
-
-    print("gesendet")
 
 
 def send_button_press(press_start: datetime.datetime, press_duration: datetime.timedelta):
@@ -33,6 +32,6 @@ def send_button_press(press_start: datetime.datetime, press_duration: datetime.t
     duration = "{0},{1}".format(press_duration.seconds, press_duration.microseconds // 1000)
 
     subject = "Der Knopf wurde gedrueckt!"
-    message = """Am {0} wurde der Knopf fuer {1} Sekunden gedrueckt!""".format(date, duration)
+    message = "Am {0} wurde der Knopf fuer {1} Sekunden gedrueckt!".format(date, duration)
 
     send_mail(subject, message)
