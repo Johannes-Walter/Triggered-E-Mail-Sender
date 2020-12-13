@@ -9,7 +9,7 @@ def send_daily_update() -> None:
     subject = "Daily update"
     message = ""
 
-    button_pressings: list = get_presses_since(datetime.datetime.now - datetime.timedelta(days=1))
+    button_pressings: list = get_presses_since(datetime.datetime.now() - datetime.timedelta(days=1))
 
     if len(button_pressings) == 0:
         message = "In den letzten 24 Stunden wurde der Knopf leider kein einziges mal gedrückt."
@@ -32,7 +32,7 @@ def calculate_pushtime(button_pressings: list) -> datetime.timedelta:
 
     for press in button_pressings:
         # Position 2 ist die Druckdauer, die drückzeit wird aus allen in der Liste enthaltenen Zeiten zusammengerechnet.
-        pushtime += press[2]
+        pushtime += datetime.timedelta.st press[2]
 
     return pushtime
 

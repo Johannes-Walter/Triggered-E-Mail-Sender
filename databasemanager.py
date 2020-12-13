@@ -5,13 +5,16 @@ database_name = "button_press.db"
 
 def add_button_press(press_begin: datetime.datetime, press_duration: datetime.timedelta) -> None:
     # Druckzeitpunkt und -dauer in die Datenbank speichern.
-    write_to_database("INSERT INTO [pushings] ([press_begin], [press_duration]) VALUES (?, ?)", (str(press_begin), str(press_duration))) # Die Zeit und Dauer des Knopfdrucks in die Datenbank schreiben
+    write_to_database("INSERT INTO [pushings] ([press_begin], [press_duration]) VALUES (?, ?)", (press_begin.isoformat(), str(press_duration))) # Die Zeit und Dauer des Knopfdrucks in die Datenbank schreiben
 
 
 def get_presses_since(date: datetime.datetime) -> list:
     # Alles aus der Datenbank seit dem gegebenen Zeitpunkt auslesen
     # Der String zum Vergleich muss in einer Liste sein, da der String selbst sonst als Liste betrachtet wird -> zu viele Elemente.
-    return read_from_database("SELECT * FROM [pushings] WHERE [press_begin] >= ?", (str(date),))
+    data = read_from_database("SELECT * FROM [pushings] WHERE [press_begin] >= ?", (str(date),))
+    
+    # Da die ehemaligen Zeiteinheiten jetzt "nur" Strings sind, müssen diese wiederhergestellt werden.
+    return __restore_datetime_and_timedelta(data)
 
 
 def write_to_database(SQL_String: str, values: list) -> None:
@@ -29,3 +32,37 @@ def read_from_database(SQL_String: str, comperator: list) -> list:
         return connection.execute(SQL_String, comperator).fetchall()
 
 
+def __restore_datetime_and_timedelta(data: list) -> list:
+    data = __translate_stored_time_to_datetime(data)
+    data = __translate_stored_time_to_timedelta(data)
+    return data
+
+
+def __translate_stored_time_to_timedelta(data: list) -> list:
+    for row in data:
+        row[2] = __string_to_timedelta(row[2])
+    
+    return data
+
+
+def __translate_stored_time_to_datetime(data: list) -> list:
+    for row in data:
+        row[1] = __string_to_datetime(row[1])
+    
+    return data
+
+
+def __string_to_datetime(string: str) -> datetime.datetime:
+    #  Da die Zeit in der Datenbank im ISO-Format gespeichert ist, kann sie auch einfach so wieder eingelesen werden.
+    return datetime.datetime.fromisoformat(string)
+
+
+def __string_to_timedelta(string: str) -> datetime.timedelta:
+    # Ersetzt in dem gegebenen String den Punkt (trennt die Sekunde von der Mikrosekunde) damit die Trennzeichen identisch sind
+    string = string.replace(".", ":")
+    
+    # Trennt den String jetzt in die verschiedenen Zeiteinheiten
+    string = string.split(":")
+
+    # Übersetzt den zerteilten String in eine timedelta
+    return datetime.timedelta(hours=string[0], minutes=string[1], seconds=string[2], microseconds=string[3])
