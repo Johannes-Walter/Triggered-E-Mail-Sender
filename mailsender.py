@@ -29,7 +29,7 @@ def send_mail(subject: str, content: str) -> None:
     # Mailsendedaten (Server, Adressen, ...) laden
     maildata: dict = settings_reader.get_E_Mail_data()
 
-    message: str = __build_message(subject, content)
+    message: bytes = __build_message(subject, content)
     
 
     # Einstellen des Servers
@@ -42,16 +42,16 @@ def send_mail(subject: str, content: str) -> None:
         server.sendmail(maildata["sender_adress"], maildata["receiver_adress"], message)
 
 
-def __build_message(subject: str, content: str) -> str:
+def __build_message(subject: str, content: str) -> bytes:
+
+    # Zeichensatz der Nachricht einstellen, damit Sonderzeichen auch funktionieren.
+    message: str = "Content-Type: text/html; charset=utf-8\n"
 
     # Nachricht Zusammenbauen, den Betreff mit zwei Leerzeilen vom Inhalt trennen
-    message: str = "Subject: " + subject
+    message += "Subject: " + subject + "\n\n"
     
-    # Zeichensatz der Nachricht einstellen, damit Sonderzeichen auch funktionieren.
-    message += "Content-Type: text/html; charset=utf-8\n\n"
-    message = message.encode("UTF-8")
-
     # Inhalt der Nachricht anhängen
     message += content
 
-    return message
+    # Sting in den Zeichensatz umwandeln.
+    return message.encode("UTF-8")
