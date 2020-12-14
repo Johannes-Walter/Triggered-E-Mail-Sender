@@ -35,8 +35,8 @@ def send_button_press(press_start: datetime.datetime, press_duration: datetime.t
     # Formatiert die Sekunden und Microsekunden nach dem im mailsender gegebenen Formatierung
     duration = mailsender.format_seconds(press_duration.seconds, press_duration.microseconds)
 
-    subject = "Der Knopf wurde gedrueckt!"
-    message = "Am {0} wurde der Knopf fuer {1} Sekunden gedrueckt!".format(date, duration)
+    subject = "Der Knopf wurde gedrückt!"
+    message = "Am {0} wurde der Knopf für {1} Sekunden gedrückt!".format(date, duration)
 
     mailsender.send_mail(subject, message)
 

@@ -24,16 +24,14 @@ def format_seconds(duration: datetime.timedelta) -> str:
     return seconds
 
 
-
-
 def send_mail(subject: str, content: str) -> None:
+
     # Mailsendedaten (Server, Adressen, ...) laden
     maildata: dict = settings_reader.get_E_Mail_data()
 
-    # Nachricht Zusammenbauen, den Betreff mit zwei Leerzeilen vom Inhalt trennen
-    message: str = "Subject: {0}\n\n{1}".format(subject, content)
+    message: str = __build_message(subject, content)
     
-    
+
     # Einstellen des Servers
     with smtplib.SMTP_SSL(maildata["sender_host"], maildata["server_port"], context=ssl.create_default_context()) as server:
 
@@ -44,4 +42,16 @@ def send_mail(subject: str, content: str) -> None:
         server.sendmail(maildata["sender_adress"], maildata["receiver_adress"], message)
 
 
-print(format_seconds(datetime.timedelta(15, 23, 20584, 0, 23)))
+def __build_message(subject: str, content: str) -> str:
+
+    # Nachricht Zusammenbauen, den Betreff mit zwei Leerzeilen vom Inhalt trennen
+    message: str = "Subject: " + subject
+    
+    # Zeichensatz der Nachricht einstellen, damit Sonderzeichen auch funktionieren.
+    message += "Content-Type: text/html; charset=utf-8\n\n"
+    message = message.encode("UTF-8")
+
+    # Inhalt der Nachricht anhängen
+    message += content
+
+    return message
