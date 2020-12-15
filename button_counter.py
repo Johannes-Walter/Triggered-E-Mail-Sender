@@ -1,42 +1,38 @@
 from mailsender import send_mail
-from gpiozero import Button
+import RPi.GPIO as GPIO
 import datetime
 import databasemanager
 import mailsender
 import settings_reader
-import signal
-
-
-press_start: datetime.datetime
-press_end: datetime.datetime
-
+import time
 
 def run_loop() -> None:
 
-
+    press_start: datetime.datetime
+    press_end: datetime.datetime
     pin_to_read: int = settings_reader.get_pin_to_read()
     batch_wait_time: int = settings_reader.get_batch_send_wait_time()
 
-    # Erstellen eines Knopfobjektes
-    button: Button = Button(pin_to_read)
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(pin_to_read, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-    button.when_pressed = button_press
-    button.when_released = button_release
-    signal.pause()
+    print("GPIO_loop starting...")
+    while True:
+        # Auf das Betätigen des Knopfes warten
+        GPIO.wait_for_edge(pin_to_read, GPIO.RISING)
+        press_start = datetime.datetime.now()
+        # Knopf entprellen
+        time.sleep(0.05)
 
+        # Auf das Loslassen des Knopfes Warten
+        GPIO.wait_for_edge(pin_to_read, GPIO.FALLING)
+        press_end = datetime.datetime.now()
+        # Knopf entprellen
+        time.sleep(0.05)
 
-def button_press() -> None:
-    global press_start 
-    press_start = datetime.datetime.now()
-    
-
-def button_release() -> None:
-    global press_start
-
-    press_end = datetime.datetime.now()
-
-    databasemanager.add_button_press(press_start, press_end-press_start)
-    send_button_press(press_start, press_end-press_start)
+        databasemanager.add_button_press(press_start, press_end-press_start)
+        send_button_press(press_start, press_end-press_start)
 
 
 def send_button_press(press_start: datetime.datetime, press_duration: datetime.timedelta) -> None:
