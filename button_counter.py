@@ -32,6 +32,7 @@ def run_loop() -> None:
 
         # Nach dem der Knopf gedrückt und wieder losgelassen wurde wird die Zeit in der Datenbank gespeichert
         # und eine E-Mail mit dem Zeitpunkt ausgesendet
+        print("sending mail...")
         databasemanager.add_button_press(press_start, press_end-press_start)
         send_button_press(press_start, press_end-press_start)
 
@@ -42,7 +43,7 @@ def send_button_press(press_start: datetime.datetime, press_duration: datetime.t
     date = press_start.strftime(mailsender.DATE_FORMAT)
 
     # Formatiert die Sekunden und Microsekunden nach dem im mailsender gegebenen Formatierung
-    duration = mailsender.format_seconds(press_duration.seconds, press_duration.microseconds)
+    duration = mailsender.format_seconds(press_duration)
 
     subject = "Der Knopf wurde gedrückt!"
     message = "Am {0} wurde der Knopf für {1} Sekunden gedrückt!".format(date, duration)
