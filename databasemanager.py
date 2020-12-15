@@ -33,6 +33,7 @@ def __read_from_database(SQL_String: str, comperator: list) -> list:
 
 
 def __restore_datetime_and_timedelta(data: list) -> list:
+    # Aus der gegebenen Liste aus Strings wird eine neue aus Datetimeobjekten gemacht
     new_data = list()
     for row in data:
         list.append(new_data, (

@@ -7,6 +7,5 @@
         "sender_host": "smtp.gmail.com",
         "server_port": 465,
         "receiver_adress": "jo.walter97@gmx.de"
-    },
-    "batch_send_wait_time": 5
+    }
 }
