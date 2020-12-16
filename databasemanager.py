@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 
+# Die Datenbank enthält eine Tabelle [pushings], welche die 3 Datenreihen [id], [press_begin] und [press_duration] enthält
 __database_name = "button_press.db"
 
 def add_button_press(press_begin: datetime.datetime, press_duration: datetime.timedelta) -> None:
